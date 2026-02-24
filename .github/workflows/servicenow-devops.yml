@@ -20,7 +20,7 @@ jobs:
           change-request: >-
             {"setCloseCode":"true","autoCloseChange":true,"attributes":{
               "short_description":"Despliegue GitHub",
-              "description":"Cambio generado automáticamente",
+              "description":"Cambio generado automáticamente desde GitHub",
               "implementation_plan":"Despliegue automatizado via CI/CD",
               "backout_plan":"Re-despliegue de versión anterior",
               "test_plan":"Validación post-despliegue"
