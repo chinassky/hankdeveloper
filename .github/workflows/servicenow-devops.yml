@@ -1,0 +1,45 @@
+name: ServiceNow DevOps Pipeline
+
+on:
+  push:
+    branches: [ "main" ] # Se activa al subir cambios a la rama principal
+
+jobs:
+  # ETAPA 1: Construcción y Pruebas
+  build_job:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Run Unit Tests
+        run: echo "Ejecutando pruebas unitarias..."
+
+  # ETAPA 2: Despliegue y Registro en ServiceNow
+  deploy_job:
+    name: Deploy to Prod
+    needs: build_job # Solo corre si el build fue exitoso
+    runs-on: ubuntu-latest
+    steps:
+      - name: ServiceNow DevOps Change Request
+        # Esta es la acción oficial que conecta con tu plugin
+        uses: ServiceNow/servicenow-devops-change@v3.1.0
+        with:
+          devops-integration-token: ${{ secrets.SN_DEVOPS_TOKEN }}
+          instance-url: ${{ secrets.SN_INSTANCE_URL }}
+          tool-id: ${{ secrets.SN_ORCHESTRATION_TOOL_ID }}
+          context-github: ${{ toJSON(github) }}
+          job-name: 'Deploy to Prod'
+          change-request-details: |
+            {
+              "attributes": {
+                "short_description": "Despliegue automático desde GitHub Actions",
+                "description": "Petición de cambio generada por el pipeline de DevOps.",
+                "assignment_group": "Software Engineering", 
+                "priority": "3"
+              }
+            }
+
+      - name: Actual Deployment
+        run: echo "Desplegando la aplicación en producción..."
